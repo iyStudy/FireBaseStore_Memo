@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_kotlin"
+    app:startDestination="@id/MainFragment">
+    <fragment
+        android:id="@+id/EditMemoFragment"
+        android:name="com.example.firebasememo.PiorityEditDialogFragment"
+        tools:layout="@layout/fragment_piority"> <!-- この部分のレイアウト名が正しいことを確認 -->
+</fragment>
+
+
+<fragment
+        android:id="@+id/MainFragment"
+        android:name="com.example.firebasememo.MainFragment"
+        tools:layout="@layout/fragment_main" >
+        <argument
+            android:name="key_user_id"
+            app:argType="string" />
+
+        <!-- このアクションを追加します -->
+        <action
+            android:id="@+id/action_to_editMemoFragment"
+            android:name="com.example.firebasememo.EditMemoFragment"
+            app:destination="@id/EditMemoFragment" />
+    </fragment>
+</navigation>
