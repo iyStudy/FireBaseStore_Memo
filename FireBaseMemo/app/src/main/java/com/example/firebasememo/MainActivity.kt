@@ -27,8 +27,8 @@ class MainActivity : AppCompatActivity() {
         // アクティビティのコンテンツビューを、ビューバインディングのルートビューに設定します。
         setContentView(binding.root)
 
-//        // アプリのツールバーを設定します。
-        val toolbar: Toolbar = binding.appToolbar
-        setSupportActionBar(toolbar)
+////        // アプリのツールバーを設定します。
+//        val toolbar: Toolbar = binding.appToolbar
+//        setSupportActionBar(toolbar)
     }
 }

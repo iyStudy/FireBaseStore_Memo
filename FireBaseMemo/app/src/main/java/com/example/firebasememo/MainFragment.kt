@@ -13,15 +13,17 @@ import com.example.firebasememo.databinding.FragmentMainBinding
 
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 // メインのフラグメントクラスです。メモを表示、追加、更新する役割を持っています。
-class MainFragment : Fragment(), MemoAdapter.OnMemoSelectedListener, PiorityListener {
+class MainFragment : Fragment(), PiorityListener {
 
     // プロパティの宣言部分
     // Firestoreのインスタンス
@@ -32,6 +34,9 @@ class MainFragment : Fragment(), MemoAdapter.OnMemoSelectedListener, PiorityList
     private lateinit var binding: FragmentMainBinding
     // メモのアダプター
     private var adapter: MemoAdapter? = null
+
+    private var registration: ListenerRegistration? = null
+
 
     // ログに表示するタグ
     companion object {
@@ -51,25 +56,23 @@ class MainFragment : Fragment(), MemoAdapter.OnMemoSelectedListener, PiorityList
     // Viewが作成された後の処理
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.recyclerMemos.layoutManager = LinearLayoutManager(context)
         // FirestoreとRecyclerViewの初期設定
         initFirestore()
-        initRecyclerView()
+
+        query = firestore.collection("memos")
+
+        (query as CollectionReference).get().addOnSuccessListener { querySnapshot ->
+            val documents = querySnapshot.documents
+            adapter = MemoAdapter(documents)
+            binding.recyclerMemos.adapter = adapter
+        }.addOnFailureListener { exception ->
+            // Handle the error here
+        }
+
         // FAB（浮き出るアクションボタン）がクリックされたら優先度ダイアログを表示
         binding.fabAddMemo.setOnClickListener { showPriorityDialog() }
-    }
-
-    // Fragmentが表示されるとき
-    override fun onStart() {
-        super.onStart()
-        // アダプターのリスナーを開始
-        adapter?.startListening()
-    }
-
-    // Fragmentが非表示になるとき
-    override fun onStop() {
-        super.onStop()
-        // アダプターのリスナーを停止
-        adapter?.stopListening()
     }
 
     // Firestore関連のメソッド
@@ -83,37 +86,24 @@ class MainFragment : Fragment(), MemoAdapter.OnMemoSelectedListener, PiorityList
     private fun updateFirestoreQuery() {
         // "memos"コレクションのクエリを取得
         query = firestore.collection("memos")
-        refreshAdapter()
+        registration = (query as CollectionReference).addSnapshotListener { querySnapshot, e ->
+            if (e != null) {
+                // エラー処理
+                showErrorSnackbar(e.message ?: "データ取得エラー")
+                return@addSnapshotListener
+            }
+
+            // 新しいデータセットでアダプターを更新
+            val documents = querySnapshot?.documents
+            if (documents != null) {
+                adapter = MemoAdapter(documents)
+                binding.recyclerMemos.adapter = adapter
+            }
+        }
     }
 
     // 新しいメモをFirestoreに追加するメソッド
     private fun addMemo(memo: Memo): Task<Void> = firestore.collection("memos").document().set(memo)
-
-    // RecyclerViewの設定
-    private fun initRecyclerView() {
-        // LinearLayoutManagerを設定
-        binding.recyclerMemos.layoutManager = LinearLayoutManager(context)
-        setupAdapter()
-    }
-
-    private fun setupAdapter() {
-        // アダプターを設定
-        adapter = query?.let {
-            object : MemoAdapter(it, this@MainFragment) {
-                // エラー発生時の処理
-                override fun onError(e: FirebaseFirestoreException) {
-                    showErrorSnackbar(e.message ?: "不明なエラーが発生しました。")
-                }
-            }
-        }
-        binding.recyclerMemos.adapter = adapter
-    }
-
-    private fun refreshAdapter() {
-        // アダプターのリスニングを一旦停止して再設定
-        adapter?.stopListening()
-        setupAdapter()
-    }
 
     // UI関連のヘルパーメソッド
     // エラー時にSnackbarでメッセージを表示するメソッド
@@ -162,17 +152,8 @@ class MainFragment : Fragment(), MemoAdapter.OnMemoSelectedListener, PiorityList
             Log.e(TAG, "Document ID not available for update!")
         }
     }
-
-    // メモが選択されたときの処理
-    override fun onMemoSelected(memoSnapshot: DocumentSnapshot) {
-        val memoData = memoSnapshot.toObject(Memo::class.java)?.copy(documentId = memoSnapshot.id) ?: return
-        val bundle = Bundle().apply {
-            putSerializable("selectedMemo", memoData)
-        }
-
-        val priorityEditDialog = PiorityEditDialogFragment().apply {
-            arguments = bundle
-        }
-        priorityEditDialog.show(childFragmentManager, PiorityDialogFragment.TAG)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        registration?.remove() // Remove the listener
     }
 }
