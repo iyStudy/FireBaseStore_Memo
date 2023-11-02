@@ -75,7 +75,7 @@ class MemoDialogFragment : DialogFragment() {
     // 送信ボタンがクリックされたときの処理
     private fun onSubmitClicked() {
         // メモと優先度を取得して、新しいMemoオブジェクトを作成
-        val memo = Memo(binding.memoFormText.text.toString(), binding.memoFromPiority.rating.toDouble())
+        val memo = Memo(binding.memoFormText.text.toString())
         memoListener?.onCreateMemo(memo)  // リスナーを通じてメモの優先度を通知
         dismiss()  // ダイアログを閉じる
     }

@@ -31,7 +31,6 @@ open class MemoAdapter(
             val memo = snapshot.toObject<Memo>() ?: return
             with(binding) {
                 tvMemo.text = memo.text
-                tvPriority.text = memo.priority.toString()
                 root.setOnClickListener { onMemoSelected(snapshot) }
             }
         }
