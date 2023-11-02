@@ -31,7 +31,7 @@ open class MemoAdapter(
             val memo = snapshot.toObject<Memo>() ?: return
             with(binding) {
                 tvMemo.text = memo.text
-                tvPiority.text = memo.piority.toString()
+                tvPriority.text = memo.priority.toString()
                 btDelete.setOnClickListener {
                     snapshot.reference.delete().addOnFailureListener { e ->
                         Log.e("MemoAdapter", "Document deletion failed.", e)

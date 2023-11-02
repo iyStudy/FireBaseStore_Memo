@@ -9,7 +9,7 @@ import java.io.Serializable
  */
 data class Memo(
     var text: String = "",
-    var piority: Double = 0.0,  // メモの優先度。数字が大きいほど優先度が高いとされる。初期値は0.0。
+    var priority: Double = 0.0,  // メモの優先度。数字が大きいほど優先度が高いとされる。初期値は0.0。
     val documentId: String? = null, // FirestoreのドキュメントIDを保持。新しいメモを作成する場合はnullになる可能性がある
 ) : Serializable
 

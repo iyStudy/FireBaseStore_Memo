@@ -7,12 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import com.example.firebasememo.databinding.DialogPiorityBinding
+import com.example.firebasememo.databinding.DialogMemoBinding
 
 class MemoEditDialogFragment : DialogFragment() {
 
     // Properties
-    private lateinit var binding: DialogPiorityBinding
+    private lateinit var binding: DialogMemoBinding
     private var ratingListener: MemoListener? = null
 
     // Constants
@@ -26,7 +26,7 @@ class MemoEditDialogFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DialogPiorityBinding.inflate(inflater, container, false)
+        binding = DialogMemoBinding.inflate(inflater, container, false)
         initializeUIElements()
         return binding.root
     }
@@ -45,7 +45,7 @@ class MemoEditDialogFragment : DialogFragment() {
     private fun initializeUIElements() {
         val selectedMemo = arguments?.getSerializable("selectedMemo") as? Memo
         binding.memoFormText.setText(selectedMemo?.text) // Set existing text
-        binding.memoFromPiority.rating = selectedMemo?.piority!!.toFloat()      // 優先度追加
+        binding.memoFromPiority.rating = selectedMemo?.priority!!.toFloat()      // 優先度追加
         binding.memoFormButton.setOnClickListener { onUpdateClicked() }
         binding.memoFormCancel.setOnClickListener { onCancelClicked() }
     }
@@ -74,7 +74,7 @@ class MemoEditDialogFragment : DialogFragment() {
             }
 
         selectedMemo.text = binding.memoFormText.text.toString()
-        selectedMemo.piority =  binding.memoFromPiority.rating.toDouble()
+        selectedMemo.priority =  binding.memoFromPiority.rating.toDouble()
         ratingListener?.onUpdateMemo(selectedMemo)
         dismiss()
     }

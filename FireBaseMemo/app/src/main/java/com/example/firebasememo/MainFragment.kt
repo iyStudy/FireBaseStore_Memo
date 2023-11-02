@@ -144,7 +144,7 @@ class MainFragment : Fragment(), MemoListener {
     override fun onUpdateMemo(memo: Memo) {
         memo.documentId?.let {
             firestore.collection("memos")
-                .document(it).update("text", memo.text, "piority",memo.piority)
+                .document(it).update("text", memo.text, "priority",memo.priority)
                 .addOnSuccessListener {
                     // メモの更新に成功したときのログ出力
                     Log.d(TAG, "Memo successfully updated!")

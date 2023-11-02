@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import com.example.firebasememo.databinding.DialogPiorityBinding
+import com.example.firebasememo.databinding.DialogMemoBinding
 
 // 優先度関連のインターフェース。優先度の選択やメモの更新をハンドルします。
 interface MemoListener {
@@ -18,7 +18,7 @@ interface MemoListener {
 class MemoDialogFragment : DialogFragment() {
 
     // ViewBindingのプロパティ
-    private lateinit var binding: DialogPiorityBinding  // 実際のバインディング変数
+    private lateinit var binding: DialogMemoBinding  // 実際のバインディング変数
 
     // メモのイベントをハンドルするリスナー
     private var memoListener: MemoListener? = null
@@ -36,7 +36,7 @@ class MemoDialogFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         // ViewBindingを用いてViewを生成
-        binding = DialogPiorityBinding.inflate(inflater, container, false)
+        binding = DialogMemoBinding.inflate(inflater, container, false)
         setupClickListeners()
         return binding.root
     }
