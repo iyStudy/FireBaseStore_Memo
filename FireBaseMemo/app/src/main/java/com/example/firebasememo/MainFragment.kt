@@ -72,7 +72,7 @@ class MainFragment : Fragment(), MemoListener {
         }
 
         // FAB（浮き出るアクションボタン）がクリックされたときに優先度ダイアログを表示するリスナーを設定
-        binding.fabAddMemo.setOnClickListener { showPriorityDialog() }
+        binding.fabAddMemo.setOnClickListener { showMemoDialog() }
     }
 
     // Firestoreの初期設定を行うメソッド
@@ -112,7 +112,7 @@ class MainFragment : Fragment(), MemoListener {
     }
 
     // メモダイアログを表示するメソッド
-    private fun showPriorityDialog() {
+    private fun showMemoDialog() {
         val memoDialog = MemoDialogFragment()
         memoDialog.show(childFragmentManager, MemoDialogFragment.TAG)
     }
