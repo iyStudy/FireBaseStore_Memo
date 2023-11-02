@@ -9,20 +9,19 @@ import androidx.fragment.app.DialogFragment
 import com.example.firebasememo.databinding.DialogPiorityBinding
 
 // 優先度関連のインターフェース。優先度の選択やメモの更新をハンドルします。
-interface PiorityListener {
-    fun onPiority(memo: Memo)   // 優先度が選択されたときの処理
+interface MemoListener {
+    fun onCreateMemo(memo: Memo)   // メモ作成が選択された時の処理
     fun onUpdateMemo(memo: Memo)  // メモが更新されたときの処理
 }
 
 // 優先度の詳細を入力するためのダイアログフラグメント
-class PiorityDialogFragment : DialogFragment() {
+class MemoDialogFragment : DialogFragment() {
 
     // ViewBindingのプロパティ
-    private var _binding: DialogPiorityBinding? = null  // 実際のバインディング変数
-    private val binding get() = _binding!!  // nullでないことを保証するバインディング変数
+    private lateinit var binding: DialogPiorityBinding  // 実際のバインディング変数
 
-    // 優先度のイベントをハンドルするリスナー
-    private var ratingListener: PiorityListener? = null
+    // メモのイベントをハンドルするリスナー
+    private var memoListener: MemoListener? = null
 
     // 定数
     companion object {
@@ -37,23 +36,17 @@ class PiorityDialogFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         // ViewBindingを用いてViewを生成
-        _binding = DialogPiorityBinding.inflate(inflater, container, false)
+        binding = DialogPiorityBinding.inflate(inflater, container, false)
         setupClickListeners()
         return binding.root
-    }
-
-    // Viewが破棄されるときの処理
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null  // メモリリークを避けるためにnullを設定
     }
 
     // Fragmentがアタッチされるときの処理
     override fun onAttach(context: Context) {
         super.onAttach(context)
         // 親のフラグメントがPiorityListenerを実装しているか確認
-        if (parentFragment is PiorityListener) {
-            ratingListener = parentFragment as PiorityListener
+        if (parentFragment is MemoListener) {
+            memoListener = parentFragment as MemoListener
         }
     }
 
@@ -65,7 +58,7 @@ class PiorityDialogFragment : DialogFragment() {
 
     // UI関連のヘルパーメソッドとイベントハンドラー
     private fun setupClickListeners() {
-        // 送信ボタンがクリックされたときの処理を設定
+        // Submitボタンがクリックされたときの処理を設定
         binding.memoFormButton.setOnClickListener { onSubmitClicked() }
         // キャンセルボタンがクリックされたときの処理を設定
         binding.memoFormCancel.setOnClickListener { onCancelClicked() }
@@ -83,7 +76,7 @@ class PiorityDialogFragment : DialogFragment() {
     private fun onSubmitClicked() {
         // メモと優先度を取得して、新しいMemoオブジェクトを作成
         val memo = Memo(binding.memoFormText.text.toString(), binding.memoFromPiority.rating.toDouble())
-        ratingListener?.onPiority(memo)  // リスナーを通じてメモの優先度を通知
+        memoListener?.onCreateMemo(memo)  // リスナーを通じてメモの優先度を通知
         dismiss()  // ダイアログを閉じる
     }
 

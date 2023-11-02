@@ -9,13 +9,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.example.firebasememo.databinding.DialogPiorityBinding
 
-
-class PiorityEditDialogFragment : DialogFragment() {
+class MemoEditDialogFragment : DialogFragment() {
 
     // Properties
-    private var _binding: DialogPiorityBinding? = null
-    private val binding get() = _binding!!
-    private var ratingListener: PiorityListener? = null
+    private lateinit var binding: DialogPiorityBinding
+    private var ratingListener: MemoListener? = null
 
     // Constants
     companion object {
@@ -28,16 +26,9 @@ class PiorityEditDialogFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = DialogPiorityBinding.inflate(inflater, container, false)
-
+        binding = DialogPiorityBinding.inflate(inflater, container, false)
         initializeUIElements()
-
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     override fun onAttach(context: Context) {
@@ -55,7 +46,6 @@ class PiorityEditDialogFragment : DialogFragment() {
         val selectedMemo = arguments?.getSerializable("selectedMemo") as? Memo
         binding.memoFormText.setText(selectedMemo?.text) // Set existing text
         binding.memoFromPiority.rating = selectedMemo?.piority!!.toFloat()      // 優先度追加
-
         binding.memoFormButton.setOnClickListener { onUpdateClicked() }
         binding.memoFormCancel.setOnClickListener { onCancelClicked() }
     }
@@ -68,8 +58,8 @@ class PiorityEditDialogFragment : DialogFragment() {
     }
 
     private fun setupRatingListener() {
-        if (parentFragment is PiorityListener) {
-            ratingListener = parentFragment as PiorityListener
+        if (parentFragment is MemoListener) {
+            ratingListener = parentFragment as MemoListener
         } else {
             Log.e(TAG, "Parent fragment does not implement PiorityListener!")
         }
@@ -84,7 +74,7 @@ class PiorityEditDialogFragment : DialogFragment() {
             }
 
         selectedMemo.text = binding.memoFormText.text.toString()
-        selectedMemo.piority =  binding.memoFromPiority.rating.toDouble()   // 優先度追加
+        selectedMemo.piority =  binding.memoFromPiority.rating.toDouble()
         ratingListener?.onUpdateMemo(selectedMemo)
         dismiss()
     }

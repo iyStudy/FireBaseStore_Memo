@@ -6,8 +6,8 @@
     app:startDestination="@id/MainFragment">
     <fragment
         android:id="@+id/EditMemoFragment"
-        android:name="com.example.firebasememo.PiorityEditDialogFragment"
-        tools:layout="@layout/fragment_piority"> <!-- この部分のレイアウト名が正しいことを確認 -->
+        android:name="com.example.firebasememo.MemoEditDialogFragment"
+        tools:layout="@layout/fragment_priority"> <!-- この部分のレイアウト名が正しいことを確認 -->
 </fragment>
 
 
