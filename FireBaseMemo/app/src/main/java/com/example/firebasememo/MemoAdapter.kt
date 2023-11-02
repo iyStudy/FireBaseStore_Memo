@@ -32,16 +32,6 @@ open class MemoAdapter(
             with(binding) {
                 tvMemo.text = memo.text
                 tvPriority.text = memo.priority.toString()
-                btDelete.setOnClickListener {
-                    snapshot.reference.delete().addOnFailureListener { e ->
-                        Log.e("MemoAdapter", "Document deletion failed.", e)
-                        Toast.makeText(
-                            root.context,
-                            "メモの削除に失敗しました。しばらくしてから再度お試しください。",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
                 root.setOnClickListener { onMemoSelected(snapshot) }
             }
         }
