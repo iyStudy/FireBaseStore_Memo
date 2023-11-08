@@ -34,8 +34,6 @@ class MainFragment : Fragment(), MemoListener {
     // メモのアダプター
     private var adapter: MemoAdapter? = null
 
-    private var registration: ListenerRegistration? = null
-
     // ログに表示するタグ
     companion object {
         private const val TAG = "MainFragment"
@@ -62,13 +60,7 @@ class MainFragment : Fragment(), MemoListener {
         query = firestore.collection("memos")
 
         // Firestoreからメモを取得し、成功した場合はアダプターを設定
-        (query as CollectionReference).get().addOnSuccessListener { querySnapshot ->
-            val documents = querySnapshot.documents
-            adapter = createAdapter(documents)
-            binding.recyclerMemos.adapter = adapter
-        }.addOnFailureListener { exception ->
-            // Firestoreからのデータ取得に失敗した場合のエラーハンドリング
-        }
+
 
         // FAB（浮き出るアクションボタン）がクリックされたときに優先度ダイアログを表示するリスナーを設定
         binding.fabAddMemo.setOnClickListener { showMemoDialog() }
@@ -78,29 +70,9 @@ class MainFragment : Fragment(), MemoListener {
     private fun initFirestore() {
         // Firestoreのインスタンスを取得
         firestore = Firebase.firestore
-        // Firestoreのクエリを更新する
-        updateFirestoreQuery()
+
     }
 
-    // Firestoreのクエリを更新するメソッド
-    private fun updateFirestoreQuery() {
-        // "memos"コレクションのクエリを取得し、リアルタイム更新
-        query = firestore.collection("memos")
-        registration = (query as CollectionReference).addSnapshotListener { querySnapshot, e ->
-            if (e != null) {
-                // Firestoreのデータ取得でエラーが発生した場合のハンドリング
-                showErrorSnackbar(e.message ?: "データ取得エラー")
-                return@addSnapshotListener
-            }
-
-            // データが更新された場合、アダプターを新しいデータセットで更新
-            val documents = querySnapshot?.documents
-            if (documents != null) {
-                adapter = createAdapter(documents)
-                binding.recyclerMemos.adapter = adapter
-            }
-        }
-    }
 
     // 新しいメモをFirestoreに追加するメソッド
     private fun addMemo(memo: Memo): Task<Void> = firestore.collection("memos").document().set(memo)
@@ -137,12 +109,6 @@ class MainFragment : Fragment(), MemoListener {
             hideKeyboard()
             Snackbar.make(binding.root, "メモの追加に失敗しました", Snackbar.LENGTH_SHORT).show()
         }
-    }
-
-    // Viewが破棄されるときのリスナーを削除する処理
-    override fun onDestroyView() {
-        super.onDestroyView()
-        registration?.remove() // リスナーの削除
     }
 
     // Firestoreのドキュメントからアダプターを作成するメソッド
