@@ -166,20 +166,6 @@ class MainFragment : Fragment(), MemoListener {
 
     // Firestoreのドキュメントからアダプターを作成するメソッド
     private  fun createAdapter(documents: List<DocumentSnapshot>): MemoAdapter {
-        return MemoAdapter(documents){
-                snapshot ->
-            // メモの項目がクリックされた時の処理
-            val memoData = snapshot.toObject(Memo::class.java)?.copy(documentId = snapshot.id) ?: return@MemoAdapter
-            // 選択されたメモのデータをバンドルに設定
-            val bundle = Bundle().apply {
-                putSerializable("selectedMemo", memoData)
-            }
-
-            // 優先度編集ダイアログを表示する
-            val priorityEditDialog = MemoEditDialogFragment().apply {
-                arguments = bundle
-            }
-            priorityEditDialog.show(childFragmentManager, MemoDialogFragment.TAG)
-        }
+        return MemoAdapter(documents)
     }
 }

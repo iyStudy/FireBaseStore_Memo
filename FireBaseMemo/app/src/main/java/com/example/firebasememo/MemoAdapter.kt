@@ -11,7 +11,6 @@ import com.google.firebase.firestore.ktx.toObject
 
 open class MemoAdapter(
     private val snapshotList: List<DocumentSnapshot>,
-    private val onMemoSelected:(DocumentSnapshot) ->Unit
 ) : RecyclerView.Adapter<MemoAdapter.MemoViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemoViewHolder {
@@ -31,7 +30,6 @@ open class MemoAdapter(
             val memo = snapshot.toObject<Memo>() ?: return
             with(binding) {
                 tvMemo.text = memo.text
-                root.setOnClickListener { onMemoSelected(snapshot) }
             }
         }
     }
