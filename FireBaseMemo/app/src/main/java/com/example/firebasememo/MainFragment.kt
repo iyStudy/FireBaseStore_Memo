@@ -140,24 +140,6 @@ class MainFragment : Fragment(), MemoListener {
         }
     }
 
-    // メモが更新されたときのコールバックメソッド
-    override fun onUpdateMemo(memo: Memo) {
-        memo.documentId?.let {
-            firestore.collection("memos")
-                .document(it).update("text", memo.text, )
-                .addOnSuccessListener {
-                    // メモの更新に成功したときのログ出力
-                    Log.d(TAG, "Memo successfully updated!")
-                }.addOnFailureListener { e ->
-                    // メモの更新に失敗したときのログ出力
-                    Log.w(TAG, "Error updating memo", e)
-                }
-        } ?: run {
-            // ドキュメントIDが無い場合のエラーログ
-            Log.e(TAG, "Document ID not available for update!")
-        }
-    }
-
     // Viewが破棄されるときのリスナーを削除する処理
     override fun onDestroyView() {
         super.onDestroyView()

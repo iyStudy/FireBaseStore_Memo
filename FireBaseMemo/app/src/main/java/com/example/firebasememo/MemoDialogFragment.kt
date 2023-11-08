@@ -11,7 +11,6 @@ import com.example.firebasememo.databinding.DialogMemoBinding
 // 優先度関連のインターフェース。優先度の選択やメモの更新をハンドルします。
 interface MemoListener {
     fun onCreateMemo(memo: Memo)   // メモ作成が選択された時の処理
-    fun onUpdateMemo(memo: Memo)  // メモが更新されたときの処理
 }
 
 // 優先度の詳細を入力するためのダイアログフラグメント

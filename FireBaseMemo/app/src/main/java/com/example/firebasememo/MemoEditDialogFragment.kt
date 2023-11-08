@@ -73,7 +73,6 @@ class MemoEditDialogFragment : DialogFragment() {
             }
 
         selectedMemo.text = binding.memoFormText.text.toString()
-        ratingListener?.onUpdateMemo(selectedMemo)
         dismiss()
     }
 
