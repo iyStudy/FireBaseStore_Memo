@@ -36,7 +36,6 @@ class MainFragment : Fragment(), MemoListener {
 
     private var registration: ListenerRegistration? = null
 
-
     // ログに表示するタグ
     companion object {
         private const val TAG = "MainFragment"
