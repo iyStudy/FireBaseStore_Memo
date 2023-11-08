@@ -26,7 +26,7 @@ class MainFragment : Fragment(), MemoListener {
 
     // プロパティの宣言部分
     // Firestoreのインスタンス
-    private lateinit var firestore: FirebaseFirestore
+
     // Firestoreのクエリ
     private var query: Query? = null
     // ViewBindingのインスタンス
@@ -57,7 +57,7 @@ class MainFragment : Fragment(), MemoListener {
         initFirestore()
 
         // "memos"コレクションのFirestoreクエリを作成
-        query = firestore.collection("memos")
+
 
         // Firestoreからメモを取得し、成功した場合はアダプターを設定
 
@@ -69,13 +69,13 @@ class MainFragment : Fragment(), MemoListener {
     // Firestoreの初期設定を行うメソッド
     private fun initFirestore() {
         // Firestoreのインスタンスを取得
-        firestore = Firebase.firestore
+
 
     }
 
 
     // 新しいメモをFirestoreに追加するメソッド
-    private fun addMemo(memo: Memo): Task<Void> = firestore.collection("memos").document().set(memo)
+
 
     // エラー時にSnackbarでメッセージを表示するメソッド
     private fun showErrorSnackbar(message: String) {
@@ -99,16 +99,7 @@ class MainFragment : Fragment(), MemoListener {
 
     // 優先度が選択されたときのコールバックメソッド
     override fun onCreateMemo(memo: Memo) {
-        addMemo(memo).addOnSuccessListener {
-            // メモの追加に成功したときの処理
-            hideKeyboard()
-            binding.recyclerMemos.smoothScrollToPosition(0)
-            Snackbar.make(binding.root, "メモを追加しました", Snackbar.LENGTH_SHORT).show()
-        }.addOnFailureListener { _ ->
-            // メモの追加に失敗したときの処理
-            hideKeyboard()
-            Snackbar.make(binding.root, "メモの追加に失敗しました", Snackbar.LENGTH_SHORT).show()
-        }
+
     }
 
     // Firestoreのドキュメントからアダプターを作成するメソッド
