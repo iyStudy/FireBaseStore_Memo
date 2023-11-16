@@ -126,7 +126,7 @@ class MainFragment : Fragment(), MemoListener {
         }
     }
 
-    // 優先度が選択されたときのコールバックメソッド
+    // メモの追加が選択されたときのコールバックメソッド
     override fun onCreateMemo(memo: Memo) {
         addMemo(memo).addOnSuccessListener {
             // メモの追加に成功したときの処理
