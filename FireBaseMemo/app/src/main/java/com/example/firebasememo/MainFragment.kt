@@ -26,16 +26,13 @@ class MainFragment : Fragment(), MemoListener {
 
     // プロパティの宣言部分
     // Firestoreのインスタンス
-    private lateinit var firestore: FirebaseFirestore
+
     // Firestoreのクエリ
     private var query: Query? = null
     // ViewBindingのインスタンス
     private lateinit var binding: FragmentMainBinding
     // メモのアダプター
     private var adapter: MemoAdapter? = null
-
-    private var registration: ListenerRegistration? = null
-
 
     // ログに表示するタグ
     companion object {
@@ -60,16 +57,10 @@ class MainFragment : Fragment(), MemoListener {
         initFirestore()
 
         // "memos"コレクションのFirestoreクエリを作成
-        query = firestore.collection("memos")
+
 
         // Firestoreからメモを取得し、成功した場合はアダプターを設定
-        (query as CollectionReference).get().addOnSuccessListener { querySnapshot ->
-            val documents = querySnapshot.documents
-            adapter = createAdapter(documents)
-            binding.recyclerMemos.adapter = adapter
-        }.addOnFailureListener { exception ->
-            // Firestoreからのデータ取得に失敗した場合のエラーハンドリング
-        }
+
 
         // FAB（浮き出るアクションボタン）がクリックされたときに優先度ダイアログを表示するリスナーを設定
         binding.fabAddMemo.setOnClickListener { showMemoDialog() }
@@ -78,33 +69,13 @@ class MainFragment : Fragment(), MemoListener {
     // Firestoreの初期設定を行うメソッド
     private fun initFirestore() {
         // Firestoreのインスタンスを取得
-        firestore = Firebase.firestore
-        // Firestoreのクエリを更新する
-        updateFirestoreQuery()
+
+
     }
 
-    // Firestoreのクエリを更新するメソッド
-    private fun updateFirestoreQuery() {
-        // "memos"コレクションのクエリを取得し、リアルタイム更新
-        query = firestore.collection("memos")
-        registration = (query as CollectionReference).addSnapshotListener { querySnapshot, e ->
-            if (e != null) {
-                // Firestoreのデータ取得でエラーが発生した場合のハンドリング
-                showErrorSnackbar(e.message ?: "データ取得エラー")
-                return@addSnapshotListener
-            }
-
-            // データが更新された場合、アダプターを新しいデータセットで更新
-            val documents = querySnapshot?.documents
-            if (documents != null) {
-                adapter = createAdapter(documents)
-                binding.recyclerMemos.adapter = adapter
-            }
-        }
-    }
 
     // 新しいメモをFirestoreに追加するメソッド
-    private fun addMemo(memo: Memo): Task<Void> = firestore.collection("memos").document().set(memo)
+
 
     // エラー時にSnackbarでメッセージを表示するメソッド
     private fun showErrorSnackbar(message: String) {
@@ -128,58 +99,11 @@ class MainFragment : Fragment(), MemoListener {
 
     // メモの追加が選択されたときのコールバックメソッド
     override fun onCreateMemo(memo: Memo) {
-        addMemo(memo).addOnSuccessListener {
-            // メモの追加に成功したときの処理
-            hideKeyboard()
-            binding.recyclerMemos.smoothScrollToPosition(0)
-            Snackbar.make(binding.root, "メモを追加しました", Snackbar.LENGTH_SHORT).show()
-        }.addOnFailureListener { _ ->
-            // メモの追加に失敗したときの処理
-            hideKeyboard()
-            Snackbar.make(binding.root, "メモの追加に失敗しました", Snackbar.LENGTH_SHORT).show()
-        }
-    }
 
-    // メモが更新されたときのコールバックメソッド
-    override fun onUpdateMemo(memo: Memo) {
-        memo.documentId?.let {
-            firestore.collection("memos")
-                .document(it).update("text", memo.text, "priority",memo.priority)
-                .addOnSuccessListener {
-                    // メモの更新に成功したときのログ出力
-                    Log.d(TAG, "Memo successfully updated!")
-                }.addOnFailureListener { e ->
-                    // メモの更新に失敗したときのログ出力
-                    Log.w(TAG, "Error updating memo", e)
-                }
-        } ?: run {
-            // ドキュメントIDが無い場合のエラーログ
-            Log.e(TAG, "Document ID not available for update!")
-        }
-    }
-
-    // Viewが破棄されるときのリスナーを削除する処理
-    override fun onDestroyView() {
-        super.onDestroyView()
-        registration?.remove() // リスナーの削除
     }
 
     // Firestoreのドキュメントからアダプターを作成するメソッド
     private  fun createAdapter(documents: List<DocumentSnapshot>): MemoAdapter {
-        return MemoAdapter(documents){
-                snapshot ->
-            // メモの項目がクリックされた時の処理
-            val memoData = snapshot.toObject(Memo::class.java)?.copy(documentId = snapshot.id) ?: return@MemoAdapter
-            // 選択されたメモのデータをバンドルに設定
-            val bundle = Bundle().apply {
-                putSerializable("selectedMemo", memoData)
-            }
-
-            // 優先度編集ダイアログを表示する
-            val priorityEditDialog = MemoEditDialogFragment().apply {
-                arguments = bundle
-            }
-            priorityEditDialog.show(childFragmentManager, MemoDialogFragment.TAG)
-        }
+        return MemoAdapter(documents)
     }
 }

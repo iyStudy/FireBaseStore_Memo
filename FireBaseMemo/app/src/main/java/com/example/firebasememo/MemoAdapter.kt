@@ -11,7 +11,6 @@ import com.google.firebase.firestore.ktx.toObject
 
 open class MemoAdapter(
     private val snapshotList: List<DocumentSnapshot>,
-    private val onMemoSelected:(DocumentSnapshot) ->Unit
 ) : RecyclerView.Adapter<MemoAdapter.MemoViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemoViewHolder {
@@ -31,18 +30,6 @@ open class MemoAdapter(
             val memo = snapshot.toObject<Memo>() ?: return
             with(binding) {
                 tvMemo.text = memo.text
-                tvPriority.text = memo.priority.toString()
-                btDelete.setOnClickListener {
-                    snapshot.reference.delete().addOnFailureListener { e ->
-                        Log.e("MemoAdapter", "Document deletion failed.", e)
-                        Toast.makeText(
-                            root.context,
-                            "メモの削除に失敗しました。しばらくしてから再度お試しください。",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-                root.setOnClickListener { onMemoSelected(snapshot) }
             }
         }
     }
